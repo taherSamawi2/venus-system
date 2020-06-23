@@ -18,11 +18,11 @@ class CreateCustomerContactsTable extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->string('firstName');
             $table->string('lastName');
-            $table->string('position')->nullable();
+            $table->string('contactNumber')->nullable();
             $table->string('email');
+            $table->string('position')->nullable();
             $table->string('password');
             $table->boolean('primaryContact')->default(false);
-            $table->string('contactNumber')->nullable();
             $table->date('lastLogin')->nullable();
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->timestamps();

@@ -13,7 +13,7 @@ class CustomerRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,6 +25,7 @@ class CustomerRequest extends FormRequest
     {
         return [
             'company'=>'required',
+            'email'=>'required|email',
         ];
     }
 }

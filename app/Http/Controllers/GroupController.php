@@ -11,7 +11,7 @@ class GroupController extends Controller
     //Show All Groups
     public function index()
     {
-        $Groups = Group::all();
+        $Groups = Group::paginate(10);;
         return  GroupResource::collection($Groups);
     }
 
@@ -23,26 +23,35 @@ class GroupController extends Controller
 
     // save the new Group
     public function store(GroupRequest $request){
-        $validatedData = $request->validated();
-        Group::create($validatedData);
-        return response()->json('The Group was added successfully');
-    }
-
-    // show a view to edit Group
-    public function edit(Group $group){
-        return new GroupResource($group);
+        $group = Group::create([
+            'name' => $request->name
+        ]);
+        return response()->json([
+            "message" => "added successfully",
+            "item" => "Group",
+            "data" => $group
+        ], 201);
     }
 
     // persist the edited Group
     public function update(GroupRequest $request,Group $group){
-        $group->update($request);
-        return response()->json('successfully updated');
+        $group = $group->update([
+            'name' => $request->name
+        ]);
+        return response()->json([
+            "message" => "successfully updated",
+            "item" => "Group",
+            "data" => $group
+        ], 200);
     }
 
     // Delete Group
     public function delete(Group $group){
         $group->delete();
-        return response()->json('successfully deleted');
+        return response()->json([
+            "message" => "successfully deleted",
+            "item" => "Group",
+        ], 204);
     }
 
 }

@@ -17,13 +17,12 @@ class CreateProjectsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('customer_id');
             $table->string('name');
-            $table->string('billingType');
+            $table->text('description')->nullable();
             $table->string('status')->nullable();
             $table->string('totalRate')->nullable();
             $table->string('estimatedHours')->nullable();
             $table->date('dateStart')->nullable();
             $table->date('deadline')->nullable();
-            $table->text('description')->nullable();
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->timestamps();
         });

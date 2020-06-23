@@ -1,84 +1,77 @@
 <?php
-
 namespace App\Http\Controllers;
 use App\Http\Requests\ProjectRequest;
 use App\Http\Resources\Project as ProjectResource;
 use App\Project;
-use App\Member;
-use App\Customer;
 use Illuminate\Http\Request;
-
+use Validator;
+use Illuminate\Auth\Access\Gate;
 class ProjectController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
     }
-
     /* Show All Projects */
     public function index()
     {
-        $projects = Project::with('customer')->get();
+        $projects = Project::paginate(10);
         return ProjectResource::collection($projects);
+
     }
 
     //show a single Project
     public function show(Project $project)
     {
-        return new ProjectResource($project::with('customer')->get());
+        return new ProjectResource($project);
     }
 
-    // save the new project
+    //save the new project
     public function store(ProjectRequest $request)
     {
-        $project = new Project();
+        $project  = $this->SaveProject($request , new Project());
+        return response()->json([
+            "message" => "added successfully",
+            "item" => "project",
+            "data" => $project
+        ], 201);
+    }
+
+    public function SaveProject($request ,$project)
+    {
         $project->name = $request->name;
         $project->customer_id = $request->customer;
         $project->description = $request->description;
-        $project->billingType = $request->billingType;
         $project->status = $request->status;
         $project->totalRate = $request->totalRate;
         $project->estimatedHours = $request->estimatedHours;
-        $project->date_start = $request->dateStart;
+        $project->dateStart = $request->dateStart;
         $project->deadline = $request->deadline;
         $project->save();
         if ($request->has('tags')) {
-            $project->tags()->attach($request->tags);
+            $project->tags()->sync($request->tags,false);
         }
-        return response()->json('The project was added successfully');
-    }
-
-    // show a view to edit project
-    public function edit(Project $project)
-    {
-        return new ProjectResource($project::with('customer')->get());
+        return $project;
     }
 
     // persist the edited project
-    public function update(ProjectRequest $request, Project $project)
+    public function update(Request $request,Project $project )
     {
-        $project->update([
-            'name' => $request->name,
-            'customer_id' => $request->customer,
-            'description' => $request->description,
-            'billingType' => $request->billingType,
-            'status' => $request->status,
-            'totalRate' => $request->totalRate,
-            'estimatedHours' => $request->estimatedHours,
-            'dateStart' => $request->dateStart,
-            'deadline' => $request->deadline,
-        ]);
-        if($request->has('tags')) {
-            $project->groups()->sync($request->tags,false);
-        }
-        return response()->json('successfully updated');
+        $project  = $this->SaveProject($request,$project);
+        return response()->json([
+            "message" => "successfully updated",
+            "item" => "project",
+            "data" => $project
+        ], 200);
     }
 
     // Delete Project
     public function delete(Project $project)
     {
         $project->delete();
-        return response()->json('successfully deleted');
+        return response()->json([
+            "message" => "successfully deleted",
+            "item" => "project",
+        ], 204);
     }
 
 }

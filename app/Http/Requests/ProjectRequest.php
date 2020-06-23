@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use Validator;
 class ProjectRequest extends FormRequest
 {
     /**
@@ -13,7 +13,7 @@ class ProjectRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,10 +24,17 @@ class ProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'=>'required',
-            'customer'=>'required',
-            'billingType'=>'required',
+            'name'=>'required|min:6',
+            'customer'=>'required|numeric',
             'dateStart'=>'required',
         ];
     }
+
+//    protected function failedValidation(Validator $validator)
+//    {
+//        $errors = (new ValidationException($validator))->errors();
+//        throw new HttpResponseException(response()->json(['errors' => $errors
+//        ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
+//    }
+
 }

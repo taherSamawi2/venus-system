@@ -11,7 +11,7 @@ class TagController extends Controller
     //Show All Tags
     public function index()
     {
-        $tags = Tag::all();
+        $tags = Tag::paginate(10);
         return  TagResource::collection($tags);
     }
 
@@ -21,28 +21,37 @@ class TagController extends Controller
         return new TagResource($tag);
     }
 
-    // save the new Tag
-    public function store(Tag $request){
-        $validatedData  = $request->validated();
-        Tag::create($validatedData);
-        return response()->json('The Group was added successfully');
-    }
-
-    // show a view to edit Tag
-    public function edit(Tag $tag){
-        return new TagResource($tag);
+    //save the new Tag
+    public function store(TagRequest $request){
+        $tag = Tag::create([
+            'name' => $request->name
+        ]);
+        return response()->json([
+            "message" => "added successfully",
+            "item" => "Tag",
+            "data" => $tag
+        ], 201);
     }
 
     // persist the edited Tag
     public function update(TagRequest $request,Tag $tag){
-        $tag->update($request);
-        return response()->json('successfully updated');
+        $tag= $tag->update([
+            'name' => $request->name
+        ]);
+        return response()->json([
+            "message" => "successfully updated",
+            "item" => "Tag",
+            "data" => $tag
+        ], 200);
     }
 
     // Delete Tag
     public function delete(Tag $tag){
         $tag->delete();
-        return response()->json('successfully deleted');
+        return response()->json([
+            "message" => "successfully deleted",
+            "item" => "Tag",
+        ], 204);
     }
 
 
